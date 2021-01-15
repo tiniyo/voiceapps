@@ -1,20 +1,20 @@
-# voiceapps
+# Voice applications
 
 golang tiniyo voice call apps. this voice application has direct call and restaurent voice ivr.
 
-# build docker file.
+# Build docker file.
 
 ```bash
 $ docker build -t voiceapps:latest .
 ```
-# run docker file on port 8080
+# Run docker file on port 8080
 
 ```bash
 $ docker run -p 8080:8080 voiceapps:latest
 ```
 
-# install and configure ngrok
-## install snapd
+# Install and configure ngrok
+## Install snapd & ngrok
 ```bash
 sudo apt update
 sudo apt install snapd
@@ -37,5 +37,5 @@ Connections                   ttl     opn     rt1     rt5     p50     p90
 ```
 
 
-# configure application
+# Configure application on Tiniyo platform. 
 use public **https://04f88df36fbf.ngrok.io** url from ngrok and configure application on tiniyo for the sip endpoint to test.
