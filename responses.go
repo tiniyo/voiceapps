@@ -28,7 +28,7 @@ func (rivr RestaurentIVR) createGatherSayResponse(gatherSayString string, digits
 	resp := &Response{}
 	resp.Text = ""
 	resp.Gather = &Gather{
-		Action:      "https://tiniyo.dev/TiniyoApplications/DtmfReceived",
+		Action:      "https://5f58-49-207-209-158.ngrok.io/TiniyoApplications/DtmfReceived",
 		NumDigits:   digits,
 		FinishOnKey: "#",
 		Method:      "POST",

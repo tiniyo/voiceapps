@@ -175,12 +175,17 @@ func main() {
 	e.POST("/TiniyoApplications/DtmfReceived", func(c echo.Context) error {
 		u := StatusCallback{}
 		err := c.Bind(&u)
+		rejectresp := GetRejectedResponse()
+
 		if err != nil {
-			rejectresp := GetRejectedResponse()
 			return c.XML(http.StatusOK, rejectresp)
 		}
 
 		fmt.Println("Dtmf Digit : ", u.Digits, u.From)
+
+		if len(u.Digits) == 0 {
+			return c.XML(http.StatusOK, rejectresp)
+		}
 
 		lastChar := u.Digits[len(u.Digits)-1:]
 
