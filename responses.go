@@ -24,6 +24,23 @@ func GetRejectedResponse() *Response {
 	return rejectresp
 }
 
+func (rivr RestaurentIVR) CreateWelcomeVoiceBot(gatherSayString string) *Response {
+	resp := &Response{}
+	resp.Text = ""
+	resp.Gather = &Gather{
+		Action: "https://5f58-49-207-209-158.ngrok.io/TiniyoApplications/UserIntent",
+		Method: "POST",
+		Input:  "speech",
+	}
+	resp.Gather.Say = &Say{
+		Text: gatherSayString,
+	}
+	resp.Say = &Say{
+		Text: "We didn't receive any input. Goodbye!",
+	}
+	return resp
+}
+
 func (rivr RestaurentIVR) createGatherSayResponse(gatherSayString string, digits string) *Response {
 	resp := &Response{}
 	resp.Text = ""
