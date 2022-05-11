@@ -1,4 +1,4 @@
-FROM golang:1.15.6 as builder
+FROM golang:1.18.1 as builder
 WORKDIR /go/src/github.com/voiceapps
 COPY . .
 
