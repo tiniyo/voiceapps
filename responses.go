@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/xml"
 	"fmt"
 	"strconv"
 	"time"
@@ -14,6 +15,8 @@ type RestaurentIVR struct {
 	timing                string
 	level                 string
 	subtime               string
+	bookingdate           time.Time
+	count                 int
 }
 
 func GetRejectedResponse() *Response {
@@ -24,20 +27,68 @@ func GetRejectedResponse() *Response {
 	return rejectresp
 }
 
+func (rivr *RestaurentIVR) SetCount(count int) {
+	rivr.count = count
+}
+
+func (rivr RestaurentIVR) GetCount() int {
+	return rivr.count
+}
+
+func (rivr *RestaurentIVR) SetDay(day time.Time) {
+	rivr.bookingdate = day
+}
+
+func (rivr *RestaurentIVR) GetHoursMinute(day time.Time) (int, int) {
+	return rivr.bookingdate.Hour(), rivr.bookingdate.Minute()
+}
+
+func (rivr *RestaurentIVR) SetDayTime(dayTime string) error {
+	bookTimeDay, err := time.Parse(time.RFC3339, dayTime)
+	rivr.bookingdate = bookTimeDay
+	return err
+}
+
+func (rivr *RestaurentIVR) SetTime(hour int, minute int) {
+	rivr.bookingdate = time.Date(rivr.bookingdate.Year(),
+		rivr.bookingdate.Month(), rivr.bookingdate.Day(), hour, minute, 0, 0, time.Now().Local().Location())
+}
+
 func (rivr RestaurentIVR) CreateWelcomeVoiceBot(gatherSayString string) *Response {
+	voiceAckResp := &Response{}
+	voiceAckResp.Say = &Say{
+		Text:     "Ok",
+		Voice:    "Microsoft",
+		TextType: "ssml",
+	}
+
+	out, _ := xml.MarshalIndent(voiceAckResp, " ", "  ")
+	fmt.Println(string(out))
+
 	resp := &Response{}
 	resp.Text = ""
 	resp.Gather = &Gather{
-		Action: "https://5f58-49-207-209-158.ngrok.io/TiniyoApplications/UserIntent",
-		Method: "POST",
-		Input:  "speech",
+		Action:           "https://4b32-49-207-228-243.ngrok.io/TiniyoApplications/UserIntent",
+		Method:           "POST",
+		Input:            "speech",
+		VoiceMaxDuration: "10000",
+		VoicePreSilence:  "5000",
+		VoicePostSilence: "1000",
+		VoiceMode:        "stream",
+		VoiceAckSay:      string(out),
 	}
 	resp.Gather.Say = &Say{
-		Text: gatherSayString,
+		Text:     gatherSayString,
+		Voice:    "Microsoft",
+		TextType: "ssml",
 	}
 	resp.Say = &Say{
 		Text: "We didn't receive any input. Goodbye!",
 	}
+
+	outGather, _ := xml.MarshalIndent(resp, " ", "  ")
+	fmt.Println(string(outGather))
+
 	return resp
 }
 
@@ -45,14 +96,16 @@ func (rivr RestaurentIVR) createGatherSayResponse(gatherSayString string, digits
 	resp := &Response{}
 	resp.Text = ""
 	resp.Gather = &Gather{
-		Action:      "https://5f58-49-207-209-158.ngrok.io/TiniyoApplications/DtmfReceived",
+		Action:      "https://4b32-49-207-228-243.ngrok.io/TiniyoApplications/DtmfReceived",
 		NumDigits:   digits,
 		FinishOnKey: "#",
 		Method:      "POST",
 	}
+
 	resp.Gather.Say = &Say{
 		Text: gatherSayString,
 	}
+
 	resp.Say = &Say{
 		Text: "We didn't receive any input. Goodbye!",
 	}
@@ -64,6 +117,18 @@ func (rivr RestaurentIVR) createSayHangup(sayString string) *Response {
 	resp.Text = ""
 	resp.Say = &Say{
 		Text: sayString,
+	}
+	resp.Hangup = &Hangup{}
+	return resp
+}
+
+func (rivr RestaurentIVR) CreateSayHangupSSML(sayString string) *Response {
+	resp := &Response{}
+	resp.Text = ""
+	resp.Say = &Say{
+		Text:     sayString,
+		Voice:    "Microsoft",
+		TextType: "ssml",
 	}
 	resp.Hangup = &Hangup{}
 	return resp

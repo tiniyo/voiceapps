@@ -30,17 +30,18 @@ type IntentRanking struct {
 	Confidence float64 `json:"confidence"`
 }
 
-func ProcessUserIntent(uIntent string) {
+func ProcessUserIntent(uIntent string) UserIntent {
 	// userIntent is base64 encoded data.
 	data, err := base64.StdEncoding.DecodeString(uIntent)
 	if err != nil {
 		log.Fatal("error:", err)
 	}
+	fmt.Println(string(data))
 	// decode it to json
 	var userIntent UserIntent
 	json.Unmarshal(data, &userIntent)
 	// parse json and get the intent
 	fmt.Println(userIntent.Text, userIntent.Intent.Name)
 	// process intent.
-
+	return userIntent
 }
